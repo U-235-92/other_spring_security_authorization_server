@@ -6,9 +6,9 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -35,12 +35,12 @@ import lombok.RequiredArgsConstructor;
 public class SecurityAuthorizationConfiguration {
 
 	private final PasswordEncoder passwordEncoder;
+	@Value("${app.security.authorization.server.issuerURL}")
+	private String issuerURL;
 	
 	@Bean
 	protected SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
-		httpSecurity
-			.formLogin(Customizer.withDefaults());
 		return httpSecurity.build();
 	}
 	
@@ -52,7 +52,7 @@ public class SecurityAuthorizationConfiguration {
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.redirectUri("http://localhost:8250/login/oauth2/code/message_service")
+				.redirectUri("http://localhost:8080/message_service/authorized")
 				.scope("read_message")
 				.scope("write_message")
 				.scope("delete_message")
@@ -95,7 +95,7 @@ public class SecurityAuthorizationConfiguration {
 
 	@Bean 
 	protected AuthorizationServerSettings authorizationServerSettings() {
-		return AuthorizationServerSettings.builder().build();
+		return AuthorizationServerSettings.builder().issuer(issuerURL).build();
 	}
 
 }
