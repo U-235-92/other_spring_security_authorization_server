@@ -25,7 +25,8 @@ public class SecurityConfiguration {
 		httpSecurity
 			.authorizeHttpRequests(authorizationManager -> authorizationManager.anyRequest().authenticated())
 			.httpBasic(Customizer.withDefaults())
-			.formLogin(Customizer.withDefaults());
+			.formLogin(Customizer.withDefaults())
+			.logout(logoutCustomizer -> logoutCustomizer.invalidateHttpSession(true).deleteCookies("JSESSIONID"));
 		return httpSecurity.build();
 	}
 	
