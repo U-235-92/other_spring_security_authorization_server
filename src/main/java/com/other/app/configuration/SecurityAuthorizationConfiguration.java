@@ -51,7 +51,7 @@ public class SecurityAuthorizationConfiguration {
 				.defaultAuthenticationEntryPointFor(
 						new LoginUrlAuthenticationEntryPoint("/login"), 
 						new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
-//		httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(Customizer.withDefaults());
+		httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(Customizer.withDefaults());
 		return httpSecurity.build();
 	}
 	
@@ -64,8 +64,8 @@ public class SecurityAuthorizationConfiguration {
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.redirectUri("http://localhost:8080/login/oauth2/code/message_service")
-//				.scope(OidcScopes.OPENID)
-//				.scope(OidcScopes.PROFILE)
+				.scope(OidcScopes.OPENID)
+				.scope(OidcScopes.PROFILE)
 				.scope("read_message")
 				.scope("write_message")
 				.scope("delete_message")
