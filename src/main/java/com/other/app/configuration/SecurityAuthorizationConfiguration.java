@@ -4,6 +4,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -41,8 +42,10 @@ import lombok.RequiredArgsConstructor;
 public class SecurityAuthorizationConfiguration {
 
 	private final PasswordEncoder passwordEncoder;
-	@Value("${app.security.authorization.server.issuerURL}")
+	@Value("${app.security.authorization.server.issuer-url}")
 	private String issuerURL;
+	@Value("${app.security.authorization.server.redirect-url}")
+	private String redirectURL;
 	
 	@Bean
 	protected SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -61,11 +64,9 @@ public class SecurityAuthorizationConfiguration {
 				.clientId("message_service")
 				.clientSecret(passwordEncoder.encode("123"))
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.redirectUri("http://localhost:8080/login/oauth2/code/message_service")
+				.authorizationGrantTypes(types -> types.addAll(Set.of(AuthorizationGrantType.AUTHORIZATION_CODE, AuthorizationGrantType.REFRESH_TOKEN)))
+				.redirectUri(redirectURL)
 				.scope(OidcScopes.OPENID)
-				.scope(OidcScopes.PROFILE)
 				.scope("read_message")
 				.scope("write_message")
 				.scope("delete_message")
